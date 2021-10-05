@@ -30,6 +30,7 @@ const customTheme =  {
         brown: 'rgb(124, 127, 101)',
         purple: 'rgb(186, 165, 255)',
         pink: 'rgb(179, 0, 137)',
+        white: 'rgb(219,219,219)',
     }
 }
 

@@ -31,6 +31,7 @@ const colors: Record<string, string> = {
     male: customTheme.customColor.brown,
     unknown: customTheme.customColor.pink,
 };
+
 export const getColor = (bar: any) => {
     return colors[bar.id];
 }

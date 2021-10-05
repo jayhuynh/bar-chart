@@ -39,8 +39,8 @@ const CombinationReChart = ({data, x, leftY, rightY, category}: CombinationReCha
             >
                 <CartesianGrid stroke={customTheme.themeConfig.grid.line.stroke} vertical={false}/>
                 <XAxis dataKey={x} scale="band"/>
-                <YAxis yAxisId="left" orientation="left" stroke={customTheme.customColor.yellow}/>
-                <YAxis yAxisId="right" orientation="right" stroke={customTheme.customColor.pink}/>
+                <YAxis yAxisId="left" orientation="left" stroke={customTheme.customColor.white}/>
+                <YAxis yAxisId="right" orientation="right" stroke={customTheme.customColor.white}/>
                 <Tooltip/>
                 <Legend/>
                 {
@@ -50,9 +50,9 @@ const CombinationReChart = ({data, x, leftY, rightY, category}: CombinationReCha
                              key={`${cate.label}.${leftY}`}
                              fill={cate.color}
                              stackId={'a'}>
-                            <LabelList dataKey={`${cate.label}.${leftY}`}
-                                       fill={cate.color}
-                                       position="top"/>
+                            {category.length === 1 ?? <LabelList dataKey={`${cate.label}.${leftY}`}
+                                                                 fill={cate.color}
+                                                                 position="top"/>}
                         </Bar>
                     ))
                 }

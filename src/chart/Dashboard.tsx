@@ -1,63 +1,10 @@
-import ChoroplethMap, {ChoroplethMapData} from "./map/ChoroplethMap";
+import ChoroplethMap, {ChoroplethMapData, mapRegionToId} from "./map/ChoroplethMap";
 import PieNivo, {PieNivoData} from "./pie/PieNivo";
 import BarNivo from "./bar/BarNivo";
 import customTheme from "./theme";
 import CombinationReChart from "./combination/CombinationReChart";
 import React from "react";
 import {extractData, getMonthLabel, roundTo} from "./util/helper";
-import _ from "lodash";
-
-const mapData: ChoroplethMapData[] = [
-    {
-        "id": "01",
-        "value": 685849
-    },
-    {
-        "id": "06",
-        "value": 733895
-    },
-    {
-        "id": "12",
-        "value": 847004
-    },
-    {
-        "id": "18",
-        "value": 229583
-    },
-    {
-        "id": "34",
-        "value": 204245
-    },
-    {
-        "id": "42",
-        "value": 229544
-    },
-    {
-        "id": "02",
-        "value": 40323
-    },
-    {
-        "id": "18",
-        "value": 229584
-    },
-    {
-        "id": "49",
-        "value": 202234
-    },
-    {
-        "id": "38",
-        "value": 229583
-    },
-    {
-        "id": "38",
-        "value": 229583
-    },
-    {
-        "id": "28",
-        "value": 2029244
-    }
-];
-
 
 const fundingEntities: any[] = [
     {
@@ -129,6 +76,25 @@ const demographicDistributionComponent = (data: any) => {
 }
 
 const regionMapComponent = (data: any) => {
+    const extracted = extractData(data);
+    const regions = extracted.Democratic.stat.region
+    const mapData: ChoroplethMapData[] = [];
+
+    Object.keys(regions).map((key: string) => {
+        const id = mapRegionToId(key);
+        if (id) {
+            mapData.push({
+                id,
+                value: roundTo(regions[key], 2)
+            })
+        }
+    });
+
+    const max = mapData.reduce((a, b) => {
+        return Math.max(a, b.value);
+    }, 0)
+    console.log(max)
+
     return (
         <ChoroplethMap data={mapData}/>
     );
@@ -137,7 +103,7 @@ const regionMapComponent = (data: any) => {
 const combinationDistributionComponent = (data: any) => {
     const extracted = extractData(data);
     const combination = [];
-    console.log(extracted)
+
     for (let i = 0; i < 12; i += 1) {
         combination.push({
             month: getMonthLabel(i),
