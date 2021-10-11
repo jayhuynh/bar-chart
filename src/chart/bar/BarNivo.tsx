@@ -1,6 +1,7 @@
-import { ResponsiveBarCanvas, ResponsiveBar } from '@nivo/bar'
+import {ResponsiveBarCanvas, ResponsiveBar} from '@nivo/bar'
 import customTheme from "../theme";
 import React from "react";
+import {ResponsiveContainer} from "recharts";
 
 
 export interface BarNivoProps {
@@ -15,17 +16,17 @@ export interface BarNivoProps {
     labelY: string;
 }
 
-const BarNivo = ({ data, props, labelX, labelY }: BarNivoProps) => {
+const BarNivo = ({data, props, labelX, labelY}: BarNivoProps) => {
     return (
         <ResponsiveBar
             data={data}
-            margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+            margin={{top: 50, right: 130, bottom: 50, left: 60}}
             padding={0.2}
-            valueScale={{ type: 'linear' }}
-            indexScale={{ type: 'band', round: true }}
+            valueScale={{type: 'linear'}}
+            indexScale={{type: 'band', round: true}}
             valueFormat={''}
-            colors={{ scheme: 'nivo' }}
-            borderColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
+            colors={{scheme: 'nivo'}}
+            borderColor={{from: 'color', modifiers: [['darker', 1.6]]}}
             axisTop={undefined}
             axisRight={undefined}
             axisBottom={{
@@ -44,7 +45,7 @@ const BarNivo = ({ data, props, labelX, labelY }: BarNivoProps) => {
                 legendPosition: 'middle',
                 legendOffset: -50
             }}
-            labelTextColor={{ from: 'color', modifiers: [ [ 'darker', 1.6 ] ] }}
+            labelTextColor={{from: 'color', modifiers: [['darker', 1.6]]}}
             theme={customTheme.themeConfig}
             legends={[
                 {
@@ -70,7 +71,7 @@ const BarNivo = ({ data, props, labelX, labelY }: BarNivoProps) => {
                     ]
                 }
             ]}
-            { ...props }
+            {...props}
         />
     );
 }

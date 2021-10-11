@@ -807,7 +807,7 @@ export const SimplePanel: React.FC<Props> = ({ width, height, ...rest }) => {
         `
       )}
     >
-      <Dashboard chartType={chartType} data={newData} />
+      <Dashboard chartType={chartType} data={newData} size={{ width, height }} />
     </div>
   );
 };

@@ -5,6 +5,8 @@ import customTheme from "./theme";
 import CombinationReChart from "./combination/CombinationReChart";
 import React from "react";
 import {extractData, getMonthLabel, roundTo} from "./util/helper";
+import {HorizontalGroup, VerticalGroup} from "@grafana/ui";
+import PanelnputForm from "./components/PanelnputForm";
 
 const fundingEntities: any[] = [
     {
@@ -21,7 +23,7 @@ const fundingEntities: any[] = [
     },
 ]
 
-const partiesDistributionComponent = (data: any) => {
+const partiesDistributionComponent = (data: any, size: any) => {
     const extracted = extractData(data);
     const total = extracted.Republican.stat.ads + extracted.Democratic.stat.ads + extracted.Other.stat.ads
     const pieData: PieNivoData[] = [
@@ -45,15 +47,24 @@ const partiesDistributionComponent = (data: any) => {
         }
     ];
 
+    const pieWidth = size.width*0.5;
+
     return (
-        <PieNivo data={pieData} props={{
-            colors: (pie: any) => pie.data.color,
-        }}/>
+        <>
+            <HorizontalGroup>
+                <div style={{ width: pieWidth, height: size.height }}>
+                    <PieNivo data={pieData} props={{
+                        colors: (pie: any) => pie.data.color,
+                    }}/>
+                </div>
+                <PanelnputForm width={ size.width - pieWidth }/>
+            </HorizontalGroup>
+        </>
     );
 }
 
 const demographicDistributionComponent = (data: any) => {
-    const demographic = extractData(data).Democratic.stat.demographic;
+    const demographic = extractData(data).Dashboard.stat.demographic;
     const barData = Object.keys(demographic).map((key) => {
         return {
             age: key,
@@ -77,7 +88,7 @@ const demographicDistributionComponent = (data: any) => {
 
 const regionMapComponent = (data: any) => {
     const extracted = extractData(data);
-    const regions = extracted.Democratic.stat.region
+    const regions = extracted.Dashboard.stat.region
     const mapData: ChoroplethMapData[] = [];
 
     Object.keys(regions).map((key: string) => {
@@ -93,7 +104,6 @@ const regionMapComponent = (data: any) => {
     const max = mapData.reduce((a, b) => {
         return Math.max(a, b.value);
     }, 0)
-    console.log(max)
 
     return (
         <ChoroplethMap data={mapData}/>
@@ -135,16 +145,18 @@ const combinationDistributionComponent = (data: any) => {
 }
 
 export const Dashboard = (props: any) => {
-    const {chartType, data} = props;
+    const {chartType, data, size} = props;
 
     switch (chartType) {
         case 'party_dis':
-            return partiesDistributionComponent(data);
+            return partiesDistributionComponent(data, size);
         case 'demo_dis':
             return demographicDistributionComponent(data);
         case 'region_map':
             return regionMapComponent(data);
         case 'combine_dis':
+            return combinationDistributionComponent(data);
+        case 'panel':
             return combinationDistributionComponent(data);
         default:
             return <></>;
