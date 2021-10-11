@@ -35,3 +35,11 @@ const colors: Record<string, string> = {
 export const getColor = (bar: any) => {
     return colors[bar.id];
 }
+
+export const toMillionDolars = (spend: number) => {
+    return roundTo(spend / 1000000, 2);
+}
+
+export const numberWithCommas = (x: number) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
