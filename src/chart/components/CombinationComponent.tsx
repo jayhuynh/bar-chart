@@ -17,11 +17,9 @@ import {
 } from "@grafana/ui";
 import _ from "lodash";
 import {SelectableValue} from "@grafana/data";
-import {searchFundingEntities} from "../util/requester";
+import {getParty, getTarget, searchFundingEntities} from "../util/requester";
 
 const CombinationComponent = ({data, size}: any) => {
-    const extracted = extractData(data);
-    const combination = [];
     const monthRange = {
         max: 12,
         step: 1,
@@ -39,6 +37,10 @@ const CombinationComponent = ({data, size}: any) => {
     ];
 
     const [monthSlider, setMonthSlider] = useState([1, 12]);
+    const [combinationChartData, setCombinationChartData] = useState({
+        data: [] as any[],
+        category: [] as any[],
+    });
     const defaultValues: any = {
         target: [
             {
@@ -59,15 +61,6 @@ const CombinationComponent = ({data, size}: any) => {
         ],
     };
 
-
-    for (let i = 0; i < 12; i += 1) {
-        combination.push({
-            month: getMonthLabel(i),
-            Democratic: extracted.Democratic.timeLine[i],
-            Republican: extracted.Republican.timeLine[i],
-            Other: extracted.Other.timeLine[i],
-        });
-    }
     const chartWidth = size.width * 0.7;
     const panelWidth = size.width - chartWidth;
 
@@ -87,30 +80,81 @@ const CombinationComponent = ({data, size}: any) => {
     }
 
     const loadNewData = async (values: any) => {
-        await Promise.all(values.target.map(async (val) => {
-            return await
+        const result = await Promise.all(values.target.map(async (val) => {
+            return {
+                ...await getTarget(val.targetType.value, val.targetName.value, monthSlider[0], monthSlider[1]),
+                color: val.color,
+            }
         }));
+
+        const tempData: any[] = [];
+        const tempLabel: any[] = [];
+
+        result.map((target: any) => {
+            tempLabel.push({
+                label: target.name as string,
+                color: target.color,
+            })
+        })
+
+        for (let i = monthSlider[0] - 1; i < monthSlider[1]; i += 1) {
+            const newRecord: any = {
+                month: getMonthLabel(i),
+            }
+            result.map((target: any) => {
+                newRecord[target.name as string] = {
+                    ...target.timeLine[i]
+                }
+            })
+            tempData.push(newRecord);
+        }
+        setCombinationChartData({
+            data: tempData,
+            category: tempLabel,
+        })
     }
+
+    useEffect(() => {
+        (async () => {
+            const combination = [];
+
+            for (let i = 0; i < 12; i += 1) {
+                combination.push({
+                    month: getMonthLabel(i),
+                    Democratic: (await getParty('Democratic', 1, 12)).data.timeLine[i],
+                    Republican: (await getParty('Republican', 1, 12)).data.timeLine[i],
+                    Other: (await getParty('Other', 1, 12)).data.timeLine[i],
+                });
+            }
+
+            const category = [
+                {
+                    label: 'Democratic',
+                    color: customTheme.customColor.blue,
+                },
+                {
+                    label: 'Republican',
+                    color: customTheme.customColor.red,
+                },
+                {
+                    label: 'Other',
+                    color: customTheme.customColor.yellow,
+                }
+            ];
+
+            setCombinationChartData({
+                data: combination,
+                category: category,
+            })
+        })()
+    }, [])
 
     return (
         <>
             <HorizontalGroup>
                 <div style={{width: chartWidth, height: size.height}}>
-                    <CombinationReChart data={combination}
-                                        category={[
-                                            {
-                                                label: 'Democratic',
-                                                color: customTheme.customColor.blue,
-                                            },
-                                            {
-                                                label: 'Republican',
-                                                color: customTheme.customColor.red,
-                                            },
-                                            {
-                                                label: 'Other',
-                                                color: customTheme.customColor.yellow,
-                                            }
-                                        ]}
+                    <CombinationReChart data={combinationChartData.data}
+                                        category={combinationChartData.category}
                                         x={'month'}
                                         leftY={'ads'} rightY={'spend'}/>
                 </div>

@@ -30,6 +30,27 @@ export const getParty = async (name: string, from: number, to: number): Promise<
     })).data as any;
 }
 
+export const getTarget = async (
+    targetType: number,
+    targetName: string,
+    ccFrom: number,
+    ccTo: number,
+) => {
+    let result;
+    if (targetType === 0) {
+        result = (await getParty(
+            encodeURIComponent(targetName || ''),
+            ccFrom,
+            ccTo)).data;
+    } else {
+        result = (await getFundingEntity(
+            encodeURIComponent(targetName || ''),
+            ccFrom,
+            ccTo)).data;
+    }
+    return result;
+}
+
 export const intervalGetRequest = (
     targetType: number,
     targetName: string,
@@ -39,37 +60,15 @@ export const intervalGetRequest = (
 ) => {
     (async () => {
         // Case parties
-        if (targetType === 0) {
-            const result: any = (await getParty(
-                encodeURIComponent(targetName || ''),
-                ccFrom,
-                ccTo)).data;
-            setDataCallback(result)
-        } else {
-            const result: any = (await getFundingEntity(
-                encodeURIComponent(targetName || ''),
-                ccFrom,
-                ccTo)).data;
-            setDataCallback(result)
-        }
+        const result = await getTarget(targetType, targetName, ccFrom, ccTo);
+        setDataCallback(result)
     })()
 
     return setInterval(() => {
         (async () => {
             // Case parties
-            if (targetType === 0) {
-                const result: any = (await getParty(
-                    encodeURIComponent(targetName || ''),
-                    ccFrom,
-                    ccTo)).data;
-                setDataCallback(result)
-            } else {
-                const result: any = (await getFundingEntity(
-                    encodeURIComponent(targetName || ''),
-                    ccFrom,
-                    ccTo)).data;
-                setDataCallback(result)
-            }
+            const result = await getTarget(targetType, targetName, ccFrom, ccTo);
+            setDataCallback(result)
         })()
     }, REQUEST_INTERVAL);
 }

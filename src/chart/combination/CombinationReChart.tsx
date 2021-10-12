@@ -40,7 +40,10 @@ const CombinationReChart = ({data, x, leftY, rightY, category}: CombinationReCha
                 <CartesianGrid stroke={customTheme.themeConfig.grid.line.stroke} vertical={false}/>
                 <XAxis dataKey={x} scale="band"/>
                 <YAxis yAxisId="left" orientation="left" stroke={customTheme.customColor.white}/>
-                <YAxis yAxisId="right" orientation="right" stroke={customTheme.customColor.white}/>
+                <YAxis yAxisId="right"
+                       orientation="right"
+                       unit={'$'}
+                       stroke={customTheme.customColor.white}/>
                 <Tooltip/>
                 <Legend/>
                 {
