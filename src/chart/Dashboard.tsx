@@ -10,6 +10,7 @@ import PanelnputForm from "./components/PanelnputForm";
 import DemographicComponent from "./components/DemographicComponent";
 import RegionComponent from "./components/RegionComponent";
 import CombinationComponent from "./components/CombinationComponent";
+import SearchPanel from "./search/SearchPanel";
 
 const partiesDistributionComponent = (data: any, size: any) => {
     const extracted = extractData(data);
@@ -35,7 +36,7 @@ const partiesDistributionComponent = (data: any, size: any) => {
         }
     ];
 
-    const pieWidth = size.width * 0.6;
+    const pieWidth = size.width * 0.5;
 
     return (
         <>
@@ -63,6 +64,8 @@ export const Dashboard = (props: any) => {
             return <RegionComponent data={data} />;
         case 'combine_dis':
             return <CombinationComponent data={data} size={size} />;
+        case 'search_panel':
+            return <SearchPanel size={size} />;
         default:
             return <></>;
     }

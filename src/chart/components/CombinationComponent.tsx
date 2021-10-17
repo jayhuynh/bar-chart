@@ -86,6 +86,7 @@ const CombinationComponent = ({data, size}: any) => {
                 color: val.color,
             }
         }));
+        console.log(result);
 
         const tempData: any[] = [];
         const tempLabel: any[] = [];
@@ -97,13 +98,15 @@ const CombinationComponent = ({data, size}: any) => {
             })
         })
 
-        for (let i = monthSlider[0] - 1; i < monthSlider[1]; i += 1) {
+        const startIdx = monthSlider[0] - 1;
+        const endIdx = monthSlider[1];
+        for (let i = startIdx; i < endIdx; i += 1) {
             const newRecord: any = {
                 month: getMonthLabel(i),
             }
             result.map((target: any) => {
                 newRecord[target.name as string] = {
-                    ...target.timeLine[i]
+                    ...target.timeLine[i - startIdx]
                 }
             })
             tempData.push(newRecord);
@@ -196,44 +199,48 @@ const CombinationComponent = ({data, size}: any) => {
                                                                             setValue(`target.${index}.color` as const, color)
                                                                         }}
                                                                     />
-                                                                    <Field label={'Type'}>
-                                                                        <Select
-                                                                            key={field.id}
-                                                                            options={targetTypeOptions}
-                                                                            menuShouldPortal={true}
-                                                                            value={(() => {
-                                                                                register(`target.${index}.targetType` as const);
-                                                                                return watch(`target.${index}.targetType` as const);
-                                                                            })()}
-                                                                            onChange={(v) => {
-                                                                                setValue(`target.${index}.targetType` as const, v)
-                                                                            }}
-                                                                        />
-                                                                    </Field>
-                                                                    <Field label={'Name'}>
-                                                                        {watch(`target.${index}.targetType` as const).value === 0 ?
+                                                                    <div style={{width: panelWidth * 0.9 * 0.30}}>
+                                                                        <Field label={'Type'}>
                                                                             <Select
-                                                                                options={targetNamePartiesOptions}
+                                                                                key={field.id}
+                                                                                options={targetTypeOptions}
                                                                                 menuShouldPortal={true}
                                                                                 value={(() => {
-                                                                                    register(`target.${index}.targetName` as const);
-                                                                                    return watch(`target.${index}.targetName` as const);
+                                                                                    register(`target.${index}.targetType` as const);
+                                                                                    return watch(`target.${index}.targetType` as const);
                                                                                 })()}
                                                                                 onChange={(v) => {
-                                                                                    setValue(`target.${index}.targetName` as const, v)
+                                                                                    setValue(`target.${index}.targetType` as const, v)
                                                                                 }}
-                                                                            /> : <AsyncSelect
-                                                                                loadOptions={loadFundingEntityOption}
-                                                                                menuShouldPortal={true}
-                                                                                value={(() => {
-                                                                                    register(`target.${index}.targetName` as const);
-                                                                                    return watch(`target.${index}.targetName` as const);
-                                                                                })()}
-                                                                                onChange={(v) => {
-                                                                                    setValue(`target.${index}.targetName` as const, v)
-                                                                                }}
-                                                                            />}
-                                                                    </Field>
+                                                                            />
+                                                                        </Field>
+                                                                    </div>
+                                                                    <div style={{width: panelWidth * 0.9 * 0.50}}>
+                                                                        <Field label={'Name'}>
+                                                                            {watch(`target.${index}.targetType` as const).value === 0 ?
+                                                                                <Select
+                                                                                    options={targetNamePartiesOptions}
+                                                                                    menuShouldPortal={true}
+                                                                                    value={(() => {
+                                                                                        register(`target.${index}.targetName` as const);
+                                                                                        return watch(`target.${index}.targetName` as const);
+                                                                                    })()}
+                                                                                    onChange={(v) => {
+                                                                                        setValue(`target.${index}.targetName` as const, v)
+                                                                                    }}
+                                                                                /> : <AsyncSelect
+                                                                                    loadOptions={loadFundingEntityOption}
+                                                                                    menuShouldPortal={true}
+                                                                                    value={(() => {
+                                                                                        register(`target.${index}.targetName` as const);
+                                                                                        return watch(`target.${index}.targetName` as const);
+                                                                                    })()}
+                                                                                    onChange={(v) => {
+                                                                                        setValue(`target.${index}.targetName` as const, v)
+                                                                                    }}
+                                                                                />}
+                                                                        </Field>
+                                                                    </div>
                                                                     <IconButton
                                                                         size="lg"
                                                                         onClick={() => {

@@ -45,7 +45,7 @@ const ChoroplethMap = ({data}: ChoroplethMapProps) => {
             label="properties.name"
             valueFormat=".2s"
             projectionScale={600}
-            projectionTranslation={[1.5, 1.4]}
+            projectionTranslation={[2.2, 1.4]}
             projectionRotation={[0, 0, 0]}
             graticuleLineColor="#dddddd"
             borderWidth={0.5}
@@ -60,8 +60,8 @@ const ChoroplethMap = ({data}: ChoroplethMapProps) => {
                     anchor: 'bottom-left',
                     direction: 'column',
                     justify: true,
-                    translateX: 200,
-                    translateY: -200,
+                    translateX: 10,
+                    translateY: 0,
                     itemsSpacing: 0,
                     itemWidth: 94,
                     itemHeight: 18,

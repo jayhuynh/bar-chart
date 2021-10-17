@@ -85,7 +85,7 @@ const PanelnputForm = ({width}: any) => {
 
     return (
         <VerticalGroup spacing={'lg'}>
-            <div style={{width: width * 0.75}}>
+            <div style={{width: width * 0.9}}>
                 <InlineField label={'Month range'} grow>
                     <RangeSlider
                         step={monthRange.step}
@@ -96,7 +96,7 @@ const PanelnputForm = ({width}: any) => {
                 </InlineField>
             </div>
             <HorizontalGroup>
-                <div style={{width: width * 0.25}}>
+                <div style={{width: width * 0.35}}>
                     <InlineField label={'Target type'} grow>
                         <Select
                             options={targetTypeOptions}
@@ -128,7 +128,7 @@ const PanelnputForm = ({width}: any) => {
                     </InlineField>
                 </div>
             </HorizontalGroup>
-            <div style={{width: width * 0.75}}>
+            <div style={{width: width * 0.9}}>
                 <Alert
                     severity="info"
                     title={'Overview information'}>

@@ -75,25 +75,6 @@ const CombinationReChart = ({data, x, leftY, rightY, category}: CombinationReCha
                         </Line>
                     ))
                 }
-
-
-                {/*<Bar yAxisId="left"*/}
-                {/*     dataKey={leftY}*/}
-                {/*     stackId={'a'}*/}
-                {/*     fill={customTheme.customColor.yellow}>*/}
-                {/*    <LabelList dataKey={leftY} fill={customTheme.customColor.yellow} position="top"/>*/}
-                {/*</Bar>*/}
-                {/*<Line type="linear"*/}
-                {/*      strokeWidth={5}*/}
-                {/*      dot={{strokeWidth: 10}}*/}
-                {/*      yAxisId="right"*/}
-                {/*      dataKey="test[0].a"*/}
-                {/*      stroke={customTheme.customColor.pink}>*/}
-                {/*    <LabelList dataKey={rightY}*/}
-                {/*               offset={10}*/}
-                {/*               fill={customTheme.customColor.pink}*/}
-                {/*               position="top"/>*/}
-                {/*</Line>*/}
             </ComposedChart>
         </ResponsiveContainer>
     );

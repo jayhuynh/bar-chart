@@ -1,6 +1,7 @@
 import Axios from 'axios';
 
 Axios.defaults.baseURL = 'http://127.0.0.1:6400';
+// Axios.defaults.baseURL = 'http://34.87.216.9:6400';
 
 export const REQUEST_INTERVAL = 5000
 
@@ -10,6 +11,10 @@ export const searchFundingEntities = async (q: string): Promise<any> => {
             q: q,
         }
     })).data as any;
+}
+
+export const getTopicList = async (): Promise<any> => {
+    return (await Axios.get('/dashboard/topics')).data as any;
 }
 
 export const getFundingEntity = async (hash: string, from: number, to: number): Promise<any> => {
@@ -24,6 +29,16 @@ export const getFundingEntity = async (hash: string, from: number, to: number): 
 export const getParty = async (name: string, from: number, to: number): Promise<any> => {
     return (await Axios.get(`/dashboard/parties/${name}`, {
         params: {
+            from,
+            to,
+        }
+    })).data as any;
+}
+
+export const searchTopic = async (q: string, from: number, to: number): Promise<any> => {
+    return (await Axios.get(`/dashboard/ads/search`, {
+        params: {
+            q,
             from,
             to,
         }
