@@ -1,8 +1,8 @@
 import Axios from 'axios';
 
 // Axios.defaults.baseURL = 'http://127.0.0.1:6400';
-// Axios.defaults.baseURL = 'http://34.87.216.9:6400';
-Axios.defaults.baseURL = 'http://feadsa.live:6400';
+Axios.defaults.baseURL = 'http://34.87.216.9:6400';
+// Axios.defaults.baseURL = 'http://feadsa.live:6400';
 
 export const REQUEST_INTERVAL = 5000
 
