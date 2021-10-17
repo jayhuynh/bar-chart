@@ -14,7 +14,7 @@ import {numberWithCommas} from "../util/helper";
 import _ from "lodash";
 import {useNavigate} from "../../routes/useNavigate";
 import {useQuery} from "../../routes/useQuery";
-import {getTopicList, searchTopic} from "../util/requester";
+import {getTopicList, intervalGetRequest, intervalSearchQueryRequest, searchTopic} from "../util/requester";
 import SearchInfo from "./SearchInfo";
 import {SelectableValue} from "@grafana/data";
 
@@ -70,21 +70,23 @@ const SearchPanel = ({size}: any) => {
     }, [])
 
     useEffect(() => {
-        const query = queryDictionary();
-        console.log(query);
-    }, [queryDictionary])
+        replace(undefined, mergeQuery({
+            q: topic?.value,
+            ccFrom: monthSlider[0],
+            ccTo: monthSlider[1],
+        }))
+    }, [topic, monthSlider])
 
-    // const searchQuery = async (values: any) => {
-    //     replace(undefined, mergeQuery({
-    //         q: values.q,
-    //         ccFrom: monthSlider[0],
-    //         ccTo: monthSlider[1],
-    //     }))
-    //
-    //     const result = (await searchTopic(values.q, monthSlider[0], monthSlider[1])).data;
-    //     setData(result);
-    //     console.log(result);
-    // }
+    useEffect(() => {
+        const query = queryDictionary();
+        const interval = intervalSearchQueryRequest(
+            query.q as string,
+            Number(query.ccFrom),
+            Number(query.ccTo),
+            setData)
+
+        return () => clearInterval(interval);
+    }, [queryDictionary])
 
     return (
         <HorizontalGroup>
@@ -116,14 +118,14 @@ const SearchPanel = ({size}: any) => {
                     </div>
                     <div style={{width: panelWidth * 0.75}}>
                         <SearchInfo
-                            totalImpression={numberWithCommas(_.get(data, 'aggregations.impression_agg.value', 0))}
-                            totalSpend={numberWithCommas(_.get(data, 'aggregations.spend_agg.value', 0))}
-                            totalAds={numberWithCommas(_.get(data, 'hits.total.value', 0))} />
+                            totalAds={numberWithCommas(_.get(data, 'stat.ads', 0))}
+                            totalSpend={numberWithCommas(_.get(data, 'stat.spend', 0))}
+                            totalImpression={numberWithCommas(_.get(data, 'stat.impression', 0))} />
                     </div>
                 </VerticalGroup>
             </div>
             <div style={{overflowY: 'scroll', maxHeight: size.height, width: listWidth}}>
-                { _.get(data, 'hits.hits', []).map((val: any) => {
+                { _.get(data, 'documents', []).map((val: any) => {
                     return <SearchItem key={val._id} data={val}/>
                 }) }
             </div>

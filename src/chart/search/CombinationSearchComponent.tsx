@@ -1,6 +1,5 @@
-import {extractData, getMonthLabel} from "../util/helper";
+import {getMonthLabel} from "../util/helper";
 import CombinationReChart from "../combination/CombinationReChart";
-import customTheme from "../theme";
 import React, {useEffect, useState} from "react";
 import {
     HorizontalGroup,
@@ -10,90 +9,60 @@ import {
     FieldArray,
     ColorPicker,
     Button,
-    Input,
     Field,
     IconButton,
-    VerticalGroup, Select, AsyncSelect
+    VerticalGroup, Select
 } from "@grafana/ui";
 import _ from "lodash";
-import {SelectableValue} from "@grafana/data";
-import {getParty, getTarget, searchFundingEntities} from "../util/requester";
+import {getTarget, getTopicList, searchTopic} from "../util/requester";
 
-const CombinationComponent = ({data, size}: any) => {
+const CombinationSearchComponent = ({data, size}: any) => {
     const monthRange = {
         max: 12,
         step: 1,
         min: 1
     }
-    const targetTypeOptions = [
-        {label: 'Party', value: 0},
-        {label: 'FundingEntity', value: 1},
-    ];
-    const targetNamePartiesOptions = [
-        {label: 'All', value: 'all'},
-        {label: 'Republican', value: 'Republican'},
-        {label: 'Democratic', value: 'Democratic'},
-        {label: 'Other', value: 'Other'},
-    ];
 
     const [monthSlider, setMonthSlider] = useState([1, 12]);
     const [combinationChartData, setCombinationChartData] = useState({
         data: [] as any[],
         category: [] as any[],
     });
+    const [topicList, setTopicList] = useState<any[]>();
+
+    useEffect(() => {
+        (async () => {
+            const result = await getTopicList();
+            setTopicList(result.data.map(topic => ({
+                label: topic,
+                value: topic,
+            })));
+        })();
+    }, [])
+
     const defaultValues: any = {
         target: [
-            {
-                targetType: {label: 'Party', value: 0},
-                targetName: {label: 'Democratic', value: 'Democratic'},
-                color: customTheme.customColor.blue
-            },
-            {
-                targetType: {label: 'Party', value: 0},
-                targetName: {label: 'Republican', value: 'Republican'},
-                color: customTheme.customColor.red
-            },
-            {
-                targetType: {label: 'Party', value: 0},
-                targetName: {label: 'Other', value: 'Other'},
-                color: customTheme.customColor.yellow
-            },
         ],
     };
+
 
     const chartWidth = size.width * 0.7;
     const panelWidth = size.width - chartWidth;
 
-    const loadFundingEntityOption = (query: string) => {
-        return new Promise<Array<SelectableValue<string>>>((resolve) => {
-            (async () => {
-                const result: any[] = (await searchFundingEntities(query)).data;
-                const opts = result.map((v) => {
-                    return {
-                        label: `${v._source.funding_entity} (${v._source.party})`,
-                        value: v._id
-                    }
-                })
-                resolve(opts);
-            })();
-        })
-    }
-
     const loadNewData = async (values: any) => {
         const result = await Promise.all(values.target.map(async (val) => {
             return {
-                ...await getTarget(val.targetType.value, val.targetName.value, monthSlider[0], monthSlider[1]),
+                ...(await searchTopic(val.topic.value, monthSlider[0], monthSlider[1])).data,
                 color: val.color,
             }
         }));
-        console.log(result);
 
         const tempData: any[] = [];
         const tempLabel: any[] = [];
 
         result.map((target: any) => {
             tempLabel.push({
-                label: target.name as string,
+                label: target.q as string,
                 color: target.color,
             })
         })
@@ -105,7 +74,7 @@ const CombinationComponent = ({data, size}: any) => {
                 month: getMonthLabel(i),
             }
             result.map((target: any) => {
-                newRecord[target.name as string] = {
+                newRecord[target.q as string] = {
                     ...target.timeLine[i - startIdx]
                 }
             })
@@ -116,41 +85,6 @@ const CombinationComponent = ({data, size}: any) => {
             category: tempLabel,
         })
     }
-
-    useEffect(() => {
-        (async () => {
-            const combination = [];
-
-            for (let i = 0; i < 12; i += 1) {
-                combination.push({
-                    month: getMonthLabel(i),
-                    Democratic: (await getParty('Democratic', 1, 12)).data.timeLine[i],
-                    Republican: (await getParty('Republican', 1, 12)).data.timeLine[i],
-                    Other: (await getParty('Other', 1, 12)).data.timeLine[i],
-                });
-            }
-
-            const category = [
-                {
-                    label: 'Democratic',
-                    color: customTheme.customColor.blue,
-                },
-                {
-                    label: 'Republican',
-                    color: customTheme.customColor.red,
-                },
-                {
-                    label: 'Other',
-                    color: customTheme.customColor.yellow,
-                }
-            ];
-
-            setCombinationChartData({
-                data: combination,
-                category: category,
-            })
-        })()
-    }, [])
 
     return (
         <>
@@ -199,46 +133,20 @@ const CombinationComponent = ({data, size}: any) => {
                                                                             setValue(`target.${index}.color` as const, color)
                                                                         }}
                                                                     />
-                                                                    <div style={{width: panelWidth * 0.9 * 0.30}}>
-                                                                        <Field label={'Type'}>
+                                                                    <div style={{width: panelWidth * 0.9 * 0.70}}>
+                                                                        <Field label={'Query'}>
                                                                             <Select
                                                                                 key={field.id}
-                                                                                options={targetTypeOptions}
+                                                                                options={topicList}
                                                                                 menuShouldPortal={true}
                                                                                 value={(() => {
-                                                                                    register(`target.${index}.targetType` as const);
-                                                                                    return watch(`target.${index}.targetType` as const);
+                                                                                    register(`target.${index}.topic` as const);
+                                                                                    return watch(`target.${index}.topic` as const);
                                                                                 })()}
                                                                                 onChange={(v) => {
-                                                                                    setValue(`target.${index}.targetType` as const, v)
+                                                                                    setValue(`target.${index}.topic` as const, v)
                                                                                 }}
                                                                             />
-                                                                        </Field>
-                                                                    </div>
-                                                                    <div style={{width: panelWidth * 0.9 * 0.50}}>
-                                                                        <Field label={'Name'}>
-                                                                            {watch(`target.${index}.targetType` as const).value === 0 ?
-                                                                                <Select
-                                                                                    options={targetNamePartiesOptions}
-                                                                                    menuShouldPortal={true}
-                                                                                    value={(() => {
-                                                                                        register(`target.${index}.targetName` as const);
-                                                                                        return watch(`target.${index}.targetName` as const);
-                                                                                    })()}
-                                                                                    onChange={(v) => {
-                                                                                        setValue(`target.${index}.targetName` as const, v)
-                                                                                    }}
-                                                                                /> : <AsyncSelect
-                                                                                    loadOptions={loadFundingEntityOption}
-                                                                                    menuShouldPortal={true}
-                                                                                    value={(() => {
-                                                                                        register(`target.${index}.targetName` as const);
-                                                                                        return watch(`target.${index}.targetName` as const);
-                                                                                    })()}
-                                                                                    onChange={(v) => {
-                                                                                        setValue(`target.${index}.targetName` as const, v)
-                                                                                    }}
-                                                                                />}
                                                                         </Field>
                                                                     </div>
                                                                     <IconButton
@@ -255,8 +163,8 @@ const CombinationComponent = ({data, size}: any) => {
                                                     <Button
                                                         style={{marginRight: '1rem'}}
                                                         type="button"
-                                                        onClick={() => append({
-                                                            targetType: {},
+                                                        onClick={(e) => append({
+                                                            topic: {},
                                                             targetName: {},
                                                             color: ''
                                                         })}
@@ -280,4 +188,4 @@ const CombinationComponent = ({data, size}: any) => {
     );
 }
 
-export default CombinationComponent;
+export default CombinationSearchComponent;

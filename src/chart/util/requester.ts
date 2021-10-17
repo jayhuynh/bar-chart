@@ -87,3 +87,24 @@ export const intervalGetRequest = (
         })()
     }, REQUEST_INTERVAL);
 }
+
+export const intervalSearchQueryRequest = (
+    q: string,
+    ccFrom: number,
+    ccTo: number,
+    setDataCallback: any,
+) => {
+    (async () => {
+        // Case parties
+        const result = await searchTopic(q, ccFrom, ccTo);
+        setDataCallback(result.data)
+    })()
+
+    return setInterval(() => {
+        (async () => {
+            // Case parties
+            const result = await searchTopic(q, ccFrom, ccTo);
+            setDataCallback(result.data)
+        })()
+    }, REQUEST_INTERVAL);
+}

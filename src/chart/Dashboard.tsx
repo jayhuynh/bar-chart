@@ -11,6 +11,7 @@ import DemographicComponent from "./components/DemographicComponent";
 import RegionComponent from "./components/RegionComponent";
 import CombinationComponent from "./components/CombinationComponent";
 import SearchPanel from "./search/SearchPanel";
+import CombinationSearchComponent from "./search/CombinationSearchComponent";
 
 const partiesDistributionComponent = (data: any, size: any) => {
     const extracted = extractData(data);
@@ -64,6 +65,8 @@ export const Dashboard = (props: any) => {
             return <RegionComponent data={data} />;
         case 'combine_dis':
             return <CombinationComponent data={data} size={size} />;
+        case 'combine_search':
+            return <CombinationSearchComponent data={data} size={size} />;
         case 'search_panel':
             return <SearchPanel size={size} />;
         default:

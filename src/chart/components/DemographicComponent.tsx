@@ -2,7 +2,8 @@ import {extractData, roundTo} from "../util/helper";
 import BarNivo from "../bar/BarNivo";
 import React, {useEffect, useState} from "react";
 import {useQuery} from "../../routes/useQuery";
-import {getAllTypeRequest, intervalGetRequest} from "../util/requester";
+import {getAllTypeRequest, intervalGetRequest, intervalSearchQueryRequest} from "../util/requester";
+import _ from 'lodash';
 
 
 const DemographicComponent = () => {
@@ -11,14 +12,27 @@ const DemographicComponent = () => {
 
     useEffect(() => {
         const query = queryDictionary();
-        const interval = intervalGetRequest(
-            Number(query.targetType),
-            query.targetName as string,
-            Number(query.ccFrom),
-            Number(query.ccTo),
-            setData)
 
-        return () => clearInterval(interval);
+        if (!_.isEmpty(query.q)) {
+            const interval = intervalSearchQueryRequest(
+                query.q as string,
+                Number(query.ccFrom),
+                Number(query.ccTo),
+                setData)
+
+            return () => clearInterval(interval);
+        }
+
+        if (!_.isEmpty(query.targetType) && !_.isEmpty(query.targetName)) {
+            const interval = intervalGetRequest(
+                Number(query.targetType),
+                query.targetName as string,
+                Number(query.ccFrom),
+                Number(query.ccTo),
+                setData)
+
+            return () => clearInterval(interval);
+        }
     }, [queryDictionary])
 
     const demographic: any = _.get(data, 'stat.demographic');
