@@ -62,7 +62,7 @@ export const Dashboard = (props: any) => {
         case 'demo_dis':
             return <DemographicComponent/>;
         case 'region_map':
-            return <RegionComponent data={data} />;
+            return <RegionComponent data={data} size={size}/>;
         case 'combine_dis':
             return <CombinationComponent data={data} size={size} />;
         case 'combine_search':

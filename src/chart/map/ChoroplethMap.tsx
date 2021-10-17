@@ -10,6 +10,15 @@ export interface ChoroplethMapData {
 
 export interface ChoroplethMapProps {
     data: ChoroplethMapData[];
+    max: number;
+    mapPosition: {
+        x: number;
+        y: number;
+    };
+    legendPosition: {
+        x: number;
+        y: number;
+    };
 }
 
 export const mapRegionToId = (region: string) => {
@@ -33,19 +42,19 @@ export const mapRegionToId = (region: string) => {
     return null;
 }
 
-const ChoroplethMap = ({data}: ChoroplethMapProps) => {
+const ChoroplethMap = ({data, max, mapPosition, legendPosition}: ChoroplethMapProps) => {
     return (
         <ResponsiveChoropleth
             data={data}
             features={country.features}
             margin={{top: 0, right: 0, bottom: 0, left: 0}}
             colors="blues"
-            domain={[0, 15000]}
+            domain={[0, max]}
             unknownColor="#AAAEB0"
             label="properties.name"
             valueFormat=".2s"
             projectionScale={600}
-            projectionTranslation={[2.2, 1.4]}
+            projectionTranslation={[mapPosition.x, mapPosition.y]}
             projectionRotation={[0, 0, 0]}
             graticuleLineColor="#dddddd"
             borderWidth={0.5}
@@ -60,8 +69,8 @@ const ChoroplethMap = ({data}: ChoroplethMapProps) => {
                     anchor: 'bottom-left',
                     direction: 'column',
                     justify: true,
-                    translateX: 10,
-                    translateY: 0,
+                    translateX: legendPosition.x,
+                    translateY: legendPosition.y,
                     itemsSpacing: 0,
                     itemWidth: 94,
                     itemHeight: 18,

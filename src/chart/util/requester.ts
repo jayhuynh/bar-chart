@@ -17,6 +17,25 @@ export const getTopicList = async (): Promise<any> => {
     return (await Axios.get('/dashboard/topics')).data as any;
 }
 
+export const getAggregatingList = async (): Promise<any> => {
+    return (await Axios.get('/dashboard/topics/aggregating')).data as any;
+}
+
+export const getTopicProgress = async (q: string): Promise<any> => {
+    return (await Axios.get('/dashboard/ads/progress', {
+        params: {
+            q: q,
+        }
+    })).data as any;
+}
+
+export const createTopicReuqest = async (q: string): Promise<any> => {
+    return (await Axios.post('/dashboard/ads/search', {
+        query: q
+
+    })).data as any;
+}
+
 export const getFundingEntity = async (hash: string, from: number, to: number): Promise<any> => {
     return (await Axios.get(`/dashboard/fundings/${hash}`, {
         params: {
@@ -104,6 +123,24 @@ export const intervalSearchQueryRequest = (
         (async () => {
             // Case parties
             const result = await searchTopic(q, ccFrom, ccTo);
+            setDataCallback(result.data)
+        })()
+    }, REQUEST_INTERVAL);
+}
+
+export const intervalAggListRequest = (
+    setDataCallback: any,
+) => {
+    (async () => {
+        // Case parties
+        const result = await getAggregatingList();
+        setDataCallback(result.data)
+    })()
+
+    return setInterval(() => {
+        (async () => {
+            // Case parties
+            const result = await getAggregatingList();
             setDataCallback(result.data)
         })()
     }, REQUEST_INTERVAL);
